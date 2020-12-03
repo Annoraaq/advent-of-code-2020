@@ -13,7 +13,7 @@ function countTrees([stepX, stepY]) {
   let x = 0;
   let trees = 0;
 
-  while (y < map.length - 1) {
+  while (y + stepY < map.length) {
     x += stepX;
     x %= map[0].length;
     y += stepY;
