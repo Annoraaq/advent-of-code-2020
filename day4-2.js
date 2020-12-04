@@ -64,5 +64,5 @@ function validatePid(pid) {
 }
 
 function create4DigitValidator(min, max) {
-  return (no) => no.length == 4 && Number(no) >= min && Number(no) <= max; A
+  return (no) => no.length == 4 && Number(no) >= min && Number(no) <= max;
 }
