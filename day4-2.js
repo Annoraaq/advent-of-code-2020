@@ -51,14 +51,14 @@ function validatePid(pid) {
 }
 
 function create4DigitValidator(min, max) {
-  return (no) => no.length == 4 && Number(no) >= min && Number(no) <= max;
+  return (no) => no.length === 4 && Number(no) >= min && Number(no) <= max;
 }
 
 function extractPassports(input) {
   const passports = [];
   let passport = [];
   lines.forEach(line => {
-    if (line == '') {
+    if (line === '') {
       passports.push(passport);
       passport = {};
     } else {
