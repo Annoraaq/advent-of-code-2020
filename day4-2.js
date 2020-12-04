@@ -1,19 +1,6 @@
 const utils = require('./utils');
 const lines = utils.getRawInput().split('\n');
 
-const passports = [];
-let passport = [];
-lines.forEach(line => {
-  if (line == '') {
-    passports.push(passport);
-    passport = {};
-  } else {
-    line.split(' ').map(keyVal => keyVal.split(':')).forEach(([key, val]) => {
-      passport[key] = val;
-    });
-  }
-});
-
 const requiredFields = [
   { name: 'byr', isValid: create4DigitValidator(1920, 2002) },
   { name: 'iyr', isValid: create4DigitValidator(2010, 2020) },
@@ -24,7 +11,7 @@ const requiredFields = [
   { name: 'pid', isValid: validatePid },
 ];
 
-const noOfValidPassports = passports.filter(isPassportValid).length;
+const noOfValidPassports = extractPassports(lines).filter(isPassportValid).length;
 
 console.log(`valid passports: ${noOfValidPassports}`);
 
@@ -65,4 +52,20 @@ function validatePid(pid) {
 
 function create4DigitValidator(min, max) {
   return (no) => no.length == 4 && Number(no) >= min && Number(no) <= max;
+}
+
+function extractPassports(input) {
+  const passports = [];
+  let passport = [];
+  lines.forEach(line => {
+    if (line == '') {
+      passports.push(passport);
+      passport = {};
+    } else {
+      line.split(' ').map(keyVal => keyVal.split(':')).forEach(([key, val]) => {
+        passport[key] = val;
+      });
+    }
+  });
+  return passports;
 }
