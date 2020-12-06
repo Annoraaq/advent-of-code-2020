@@ -23,7 +23,3 @@ function binarySearch(from, till, instructions) {
   });
   return from;
 }
-
-
-
-
