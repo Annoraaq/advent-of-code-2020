@@ -54,9 +54,9 @@ function create4DigitValidator(min, max) {
   return (no) => no.length === 4 && Number(no) >= min && Number(no) <= max;
 }
 
-function extractPassports(input) {
+function extractPassports(lines) {
   const passports = [];
-  let passport = [];
+  let passport = {};
   lines.forEach(line => {
     if (line === '') {
       passports.push(passport);

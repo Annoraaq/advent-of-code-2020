@@ -9,9 +9,9 @@ const noOfValidPassports = extractPassports(lines).filter(passport =>
 
 console.log(`valid passports: ${noOfValidPassports}`);
 
-function extractPassports(input) {
+function extractPassports(lines) {
   const passports = [];
-  let passport = [];
+  let passport = {};
   lines.forEach(line => {
     if (line == '') {
       passports.push(passport);
