@@ -1,4 +1,4 @@
-const utils = require('./utils');
+const utils = require('../utils');
 const boardingPasses = utils.getInput();
 
 const seatIds = getSeatIds(boardingPasses);

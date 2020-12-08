@@ -1,4 +1,4 @@
-const utils = require('./utils');
+const utils = require('../utils');
 const input = utils.getIntInput();
 
 for (let l1 of input) {
