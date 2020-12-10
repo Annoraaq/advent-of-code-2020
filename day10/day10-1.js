@@ -1,10 +1,8 @@
 const utils = require('../utils');
-const { findInvalidNo } = require('./day9-utils');
 const adapters = utils.getIntInput();
 
 adapters.sort((a, b) => a - b);
 
-// const max = Math.max(...joltages);
 let diff1Count = 0;
 let diff3Count = 1;
 let currentVal = 0;
@@ -17,6 +15,5 @@ adapters.forEach(adapter => {
   }
   currentVal = adapter;
 })
-
 
 console.log(diff1Count * diff3Count);
