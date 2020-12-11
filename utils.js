@@ -3,6 +3,10 @@ const getInput = () => {
   return fs.readFileSync('/dev/stdin').toString().split('\n').filter(line => line !== '');
 }
 
+const getCharGridInput = () => {
+  return getInput().map(rowStr => [...rowStr]);
+}
+
 const getRawInput = () => {
   return fs.readFileSync('/dev/stdin').toString();
 }
@@ -14,5 +18,6 @@ const getIntInput = () => {
 module.exports = {
   getInput,
   getRawInput,
-  getIntInput
+  getIntInput,
+  getCharGridInput
 };
