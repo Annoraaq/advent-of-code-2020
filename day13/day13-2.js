@@ -12,35 +12,9 @@ busIds.forEach((busId) => {
   offset++;
 });
 
-const z = getZ();
-simulate(busIdsWithOffsets[0][0], BigInt(1), getZ());
+simulate(busIdsWithOffsets[0][0], BigInt(1));
 
-function getZ() {
-  const z = new Map();
-  for (let i = 1; i < busIdsWithOffsets.length; i++) {
-    const [busId, offset] = busIdsWithOffsets[i];
-    if (busId !== busIdsWithOffsets[0][0]) {
-      let counter = busIdsWithOffsets[0][0];
-      let firstEncounter = BigInt(-1);
-      let secondEncounter = BigInt(-1);
-      while (counter < BigInt(1000000)) {
-        if (((counter + offset) % busId === BigInt(0))) {
-          if (firstEncounter === BigInt(-1)) {
-            firstEncounter = counter;
-          } else {
-            secondEncounter = counter;
-            z.set(busId, (secondEncounter - firstEncounter));
-            break;
-          }
-        }
-        counter += busIdsWithOffsets[0][0];
-      }
-    }
-  }
-  return z;
-}
-
-function simulate(stepSize, checkIndex, z) {
+function simulate(stepSize, checkIndex) {
   let i = stepSize;
   let toCheckId = busIdsWithOffsets[checkIndex][0];
   let toCheckOffset = busIdsWithOffsets[checkIndex][1];
@@ -51,7 +25,7 @@ function simulate(stepSize, checkIndex, z) {
         console.log(i)
         break;
       }
-      stepSize = lcm(stepSize, z.get(toCheckId));
+      stepSize = lcm(stepSize, toCheckId);
       toCheckId = busIdsWithOffsets[checkIndex][0];
       toCheckOffset = busIdsWithOffsets[checkIndex][1];
     }
