@@ -1,7 +1,6 @@
 const utils = require('../utils');
 const lines = utils.getInput();
 let pos = 0;
-let depth = 0;
 
 console.log(lines.reduce((acc, curr) => acc + calcLine(curr), 0));
 
@@ -11,7 +10,6 @@ function calcLine(line) {
 }
 
 function calc(line) {
-  depth++;
   let currNum = 0;
   while (pos < line.length) {
     if (/[0-9]/g.test(line[pos])) {
@@ -39,6 +37,5 @@ function calc(line) {
       currNum = calc(line);
     }
   }
-  depth--;
   return currNum;
 }
