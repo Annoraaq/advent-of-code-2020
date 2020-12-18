@@ -20,19 +20,16 @@ function calc(startVal, line, noBracketMode) {
       break;
     } else if (line.substr(pos, 4) == ' + (') {
       pos += 4;
-      const calcLine = calc(0, line);
-      currNum += calcLine;
+      currNum += calc(0, line);
     } else if (line.substr(pos, 4) == ' * (') {
       pos += 4;
-      const calcLine = calc(0, line);
-      currNum *= calc(calcLine, line, true);
+      currNum *= calc(calc(0, line), line, true);
     } else if (line.substr(pos, 3) == ' + ') {
       currNum += Number(line[pos + 3]);
       pos += 4;
     } else if (line.substr(pos, 3) == ' * ') {
       pos += 3;
-      const calcLine = calc(0, line, true);
-      currNum *= calcLine;
+      currNum *= calc(0, line, true);
     } else {
       pos++;
       currNum = calc(0, line);
