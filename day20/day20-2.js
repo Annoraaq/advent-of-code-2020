@@ -23,16 +23,8 @@ function getCorners(matches) {
   return corners;
 }
 
-function createGrid(corners) {
-  const grid = [];
-  const sideLength = Math.sqrt(blocks.size);
-  for (let i = 0; i < sideLength; i++) {
-    grid.push([]);
-    for (let j = 0; j < sideLength; j++) {
-      grid[i].push(undefined);
-    }
-  }
 
+function fillTopLeftCorner(grid, corners) {
   const topLeftCorner = blocks.get(corners[0]);
   let topMatches = true;
   let leftMatches = true;
@@ -46,47 +38,64 @@ function createGrid(corners) {
       return getSidesWithReverse(block).some(side => side.join('') == left.join(''))
     });
   }
-
   grid[0][0] = topLeftCorner;
+}
 
+function createGrid(corners) {
+  const grid = [];
+  const sideLength = Math.sqrt(blocks.size);
+  for (let i = 0; i < sideLength; i++) {
+    grid.push([]);
+    for (let j = 0; j < sideLength; j++) {
+      grid[i].push(undefined);
+    }
+  }
+
+  fillTopLeftCorner(grid, corners);
 
   for (let row = 0; row < sideLength; row++) {
     for (let col = 0; col < sideLength; col++) {
       // skip top left corner
       if (row == 0 && col == 0) continue;
       if (row == 0) {
-        const leftNeighbourSide = getSides(grid[row][col - 1])[3];
-        const matching = [...blocks.values()].filter(block => block.id !== grid[row][col - 1].id).filter(block => matchesBorder(leftNeighbourSide, block));
-        rotateUntilFits(matching[0], row, col, grid);
-        grid[row][col] = matching[0];
-      } else if (col == 0) {
-        const topNeighbourSide = getSides(grid[row - 1][col])[1];
-        const matching = [...blocks.values()].filter(block => block.id !== grid[row - 1][col].id).filter(block => matchesBorder(topNeighbourSide, block));
-        rotateUntilFits(matching[0], row, col, grid);
-        grid[row][col] = matching[0];
+        const matching = findMatchingLeft(grid, row, col);
+        rotateUntilFits(matching, row, col, grid);
+        grid[row][col] = matching;
       } else {
-        const leftNeighbourSide = getSides(grid[row][col - 1])[3];
-        const topNeighbourSide = getSides(grid[row - 1][col])[1];
-        const matching = [...blocks.values()].filter(block => block.id !== grid[row - 1][col].id && block.id !== grid[row][col - 1].id).filter(block =>
-          matchesBorder(topNeighbourSide, block) && matchesBorder(leftNeighbourSide, block)
-        );
-        rotateUntilFits(matching[0], row, col, grid);
-        grid[row][col] = matching[0];
+        const matching = findMatchingTop(grid, row, col);
+        rotateUntilFits(matching, row, col, grid);
+        grid[row][col] = matching;
       }
-
     }
   }
   return grid;
 }
 
-function getRoughness(block, pattern) {
-  // turn correctly
+function findMatchingLeft(grid, row, col) {
+  const leftNeighbourSide = getSides(grid[row][col - 1])[3];
+  const otherBlocks = [...blocks.values()].filter(block => block.id !== grid[row][col - 1].id);
+  const matching = otherBlocks.filter(
+    block => matchesBorder(leftNeighbourSide, block)
+  );
+  return matching[0];
+}
+
+function findMatchingTop(grid, row, col) {
+  const topNeighbourSide = getSides(grid[row - 1][col])[1];
+  const otherBlocks = [...blocks.values()].filter(block => block.id !== grid[row - 1][col].id);
+  const matching = otherBlocks.filter(
+    block => matchesBorder(topNeighbourSide, block)
+  );
+  return matching[0];
+}
+
+function rotateUntil(block, matchFn) {
   let matches = false;
   let flipped = false;
   let rotations = 0;
   while (!matches && rotations < 5) {
-    rotateLeft(largeBlock);
-    matches = matchesPattern(largeBlock, pattern) > 0;
+    rotateLeft(block);
+    matches = matchFn(block);
     rotations++;
     if (rotations >= 5 && !flipped) {
       flip(block);
@@ -94,7 +103,10 @@ function getRoughness(block, pattern) {
       rotations = 0;
     }
   }
+}
 
+function getRoughness(block, pattern) {
+  rotateUntil(block, (block) => { return matchesPattern(block, pattern) });
   const noMatches = matchesPattern(largeBlock, pattern);
   const totalRoughness = countRoughness(largeBlock);
   let patternRoughness = 0;
@@ -157,55 +169,24 @@ function matchesBorder(border, block) {
 function rotateUntilFits(block, row, col, grid) {
   if (row == 0) {
     const leftNeighbourSide = getSides(grid[row][col - 1])[3];
-    let rotations = 0;
-    let matches = false;
-    let flipped = false;
-    while (!matches && rotations < 5) {
-      rotateLeft(block);
+    rotateUntil(block, (block) => {
       const [_top, _bottom, left, _right] = getSides(block);
-      matches = left.join('') == leftNeighbourSide.join('');
-      rotations++;
-      if (rotations >= 5 && !flipped) {
-        flip(block);
-        flipped = true;
-        rotations = 0;
-      }
-    }
+      return left.join('') == leftNeighbourSide.join('');
+    });
   } else if (col == 0) {
     const topNeighbourSide = getSides(grid[row - 1][col])[1];
-    let matches = false;
-    let flipped = false;
-    let rotations = 0;
-    while (!matches && rotations < 5) {
-      rotateLeft(block);
+    rotateUntil(block, (block) => {
       const [top, _bottom, _left, _right] = getSides(block);
-      matches = top.join('') == topNeighbourSide.join('');
-      rotations++;
-      if (rotations >= 5 && !flipped) {
-        flip(block);
-        flipped = true;
-        rotations = 0;
-      }
-    }
+      return top.join('') == topNeighbourSide.join('');
+    });
   } else {
     const leftNeighbourSide = getSides(grid[row][col - 1])[3];
     const topNeighbourSide = getSides(grid[row - 1][col])[1];
-    let matches = false;
-    let flipped = false;
-    let rotations = 0;
-    while (!matches && rotations < 5) {
-      rotateLeft(block);
+    rotateUntil(block, (block) => {
       const [top, _bottom, left, _right] = getSides(block);
-      matches = top.join('') == topNeighbourSide.join('') && left.join('') == leftNeighbourSide.join('');
-      rotations++;
-      if (rotations >= 5 && !flipped) {
-        flip(block);
-        flipped = true;
-        rotations = 0;
-      }
-    }
+      return top.join('') == topNeighbourSide.join('') && left.join('') == leftNeighbourSide.join('');
+    });
   }
-
 }
 
 function rotateLeft(block) {
