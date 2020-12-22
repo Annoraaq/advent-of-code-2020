@@ -1,4 +1,5 @@
-module.exports = () => {
+module.exports = (initialData) => {
+
   const Node = (data) => ({ data, next: null, prev: null });
 
   let head = null;
@@ -6,6 +7,16 @@ module.exports = () => {
   let size = 0;
 
   const getSize = () => size;
+
+  const toArray = () => {
+    const arr = [];
+    let curr = head;
+    while (curr !== null) {
+      arr.push(curr.data);
+      curr = curr.next;
+    }
+    return arr.reverse();
+  }
 
   const enqueue = data => {
     size++;
@@ -42,10 +53,19 @@ module.exports = () => {
 
   const peek = () => tail ? tail.data : null;
 
+  const init = (data) => {
+    data.forEach(enqueue);
+  };
+
+  if (initialData) {
+    init(initialData);
+  }
+
   return {
     size: getSize,
     enqueue,
     dequeue,
     peek,
+    toArray,
   };
 };
